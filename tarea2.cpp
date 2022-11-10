@@ -12,13 +12,14 @@ using namespace std;
 
 class Contenedor{
     public:
+    Contenedor();
     Contenedor(string ip, string trans, string rec, string perd, string estado);
 
-    string setsIp();
-    string setsTrans();
-    string setsRec();
-    string setsPerd();
-    string setsEstado();
+    void setsIp(string ip);
+    void setsTrans(string trans );
+    void setsRec( string rec);
+    void setsPerd( string perd);
+    void setsEstado( string estado);
     void imprimir();
 
     private:
@@ -28,35 +29,43 @@ class Contenedor{
     string perd;
     string estado;
 };
+Contenedor::Contenedor(){
+    ip = "";
+    trans="";
+    rec="";
+    perd="";
+    estado="";
 
+}
 
 Contenedor::Contenedor(string ip, string trans, string rec, string perd, string estado){
-    this.ip=ip;
-    this.trans=trans;
-    this.rec=rec;
-    this.perd=perd;
-    this.estado=estado;
-}
-void::Contenedor setsIp(){
     this->ip=ip;
-}
-void::Contenedor setsTrans(){
     this->trans=trans;
-}
-void::Contenedor setsRec(){
     this->rec=rec;
-}
-void::Contenedor setsPerd(){
     this->perd=perd;
-}
-void::Contenedor setsEstado(){
     this->estado=estado;
 }
-void::Contenedor imprimir(){
+void Contenedor:: setsIp(string ip){
+    this->ip=ip;
+}
+void Contenedor:: setsTrans(string trans){
+    this->trans=trans;
+}
+void Contenedor:: setsRec(string rec){
+    this->rec=rec;
+}
+void Contenedor:: setsPerd(string perd){
+    this->perd=perd;
+}
+void Contenedor:: setsEstado(string estado){
+    this->estado=estado;
+}
+void Contenedor:: imprimir(){
     cout<<this->ip <<"\t\t";
+    cout<<this->trans <<"\t";
     cout<<this->rec <<"\t";
     cout<<this->perd <<"\t";
-    cout<<this->estado <<"\t";
+    cout<<this->estado <<"\t" <<"\n";
 }
 
 void manejoDatos(string str, string ip);
@@ -105,7 +114,7 @@ int main(int argc, char *argv[] ) {
     //imprimo los resultados
     cout<<"IP"<<"\t\t\t"<<"Trans."<<"\t"<<"Rec."<<"\t"<<"Per."<<"\t"<<"Estado"<<endl;
     cout<<"------------------------------------------------------------"<<endl;
-    for (size_t i = 0; i < contenedor.size();i++ )
+    for (size_t i = 0; i < lista.size();i++ )
     {
         lista[i].imprimir();
     }
@@ -119,7 +128,6 @@ void ping(string ip, size_t pos, string pk){
     FILE *fp;
     char buffer[1024];
     fp = popen(ping.c_str(), "r"); // popen ejecuta el comando ping
-    CONTENEDOR packaje;
     //leo el buffer (salida del comando ping)
     while (fgets(buffer, sizeof(buffer), fp) != NULL) {
         count++;
@@ -138,11 +146,12 @@ void manejoDatos(string str, string ip){
     string p_tras = str.substr(0,(str.find(transmited)-8)); //guardo la cantidad de paquetes transmitidos
     string recive= "received";//variable para buscar la palabra received
     string p_rec = str.substr(str.find(transmited)+13,str.find(recive)-(str.find(transmited)+13));//guardo la cantidad de paquetes recibidos
+    string perdidos= to_string(stoi(p_tras)-stoi(p_rec));
     //guardo la informacion en el contenedor
     contenedor.setsIp(ip);
     contenedor.setsTrans(p_tras);
     contenedor.setsRec(p_rec);
-    contenedor.setsPerd(to_string(stoi(p_tras)-stoi(p_rec)));
+    contenedor.setsPerd(perdidos);
     /*
     packaje.ip=ip;
     packaje.trans=p_tras;

@@ -1,0 +1,12 @@
+192.168.10.1
+www.google.com
+www.facebook.com
+www.youtube.com
+www.discord.com
+www.microsoft.com
+www.ubiobio.cl
+www.udec.cl
+www.ufro.cl
+www.umayor.cl
+www.sii.cl
+www.unab.cl
