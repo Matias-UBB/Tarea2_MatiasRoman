@@ -10,16 +10,58 @@
 #include <ctype.h>
 using namespace std;
 
-typedef struct s_contenedor{
+class Contenedor{
+    public:
+    Contenedor(string ip, string trans, string rec, string perd, string estado);
+
+    string setsIp();
+    string setsTrans();
+    string setsRec();
+    string setsPerd();
+    string setsEstado();
+    void imprimir();
+
+    private:
     string ip;
     string trans;
     string rec;
     string perd;
     string estado;
-}CONTENEDOR;
+};
+
+
+Contenedor::Contenedor(string ip, string trans, string rec, string perd, string estado){
+    this.ip=ip;
+    this.trans=trans;
+    this.rec=rec;
+    this.perd=perd;
+    this.estado=estado;
+}
+void::Contenedor setsIp(){
+    this->ip=ip;
+}
+void::Contenedor setsTrans(){
+    this->trans=trans;
+}
+void::Contenedor setsRec(){
+    this->rec=rec;
+}
+void::Contenedor setsPerd(){
+    this->perd=perd;
+}
+void::Contenedor setsEstado(){
+    this->estado=estado;
+}
+void::Contenedor imprimir(){
+    cout<<this->ip <<"\t\t";
+    cout<<this->rec <<"\t";
+    cout<<this->perd <<"\t";
+    cout<<this->estado <<"\t";
+}
+
 void manejoDatos(string str, string ip);
 void ping(string ip, size_t pos, string pk);
-vector<CONTENEDOR> contenedor;
+vector<Contenedor> ctndr;
 
 int main(int argc, char *argv[] ) {
     //verifico que se ingresen la cantidad de parametros correctos
@@ -94,7 +136,7 @@ void ping(string ip, size_t pos, string pk){
     
 }
 void manejoDatos(string str, string ip){
-    CONTENEDOR packaje;
+    Contenedor contenedor;
     string transmited = "transmitted"; //variable para buscar la palabra transmitted
     string p_tras = str.substr(0,(str.find(transmited)-8)); //guardo la cantidad de paquetes transmitidos
     string recive= "received";//variable para buscar la palabra received
