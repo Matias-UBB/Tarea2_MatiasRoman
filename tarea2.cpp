@@ -61,7 +61,7 @@ void::Contenedor imprimir(){
 
 void manejoDatos(string str, string ip);
 void ping(string ip, size_t pos, string pk);
-vector<Contenedor> ctndr;
+vector<Contenedor> lista;
 
 int main(int argc, char *argv[] ) {
     //verifico que se ingresen la cantidad de parametros correctos
@@ -78,9 +78,9 @@ int main(int argc, char *argv[] ) {
     ifstream archivo (argv[1]); //abro el archivo
     if(!archivo.is_open()){
     cout<<"no se puede abrir el archivo o direccion erronea";
-	return 0;	
+	return 0;
 	}
-    int cantidad=0; //contador para la cantidad de lineas 
+    int cantidad=0; //contador para la cantidad de lineas
     vector<string>ip; //vector para guardar las ips
     string line; //variable para guardar las lineas del archivo (ips por linea)
     int nPaquetes=  atoi(argv[2]);
@@ -101,16 +101,13 @@ int main(int argc, char *argv[] ) {
     //espero a que terminen los hilos
 	for (int i=0; i< cantidad; i++) {
     threads[i].join();
-  	}	
+  	}
     //imprimo los resultados
     cout<<"IP"<<"\t\t\t"<<"Trans."<<"\t"<<"Rec."<<"\t"<<"Per."<<"\t"<<"Estado"<<endl;
     cout<<"------------------------------------------------------------"<<endl;
     for (size_t i = 0; i < contenedor.size();i++ )
     {
-        cout<<contenedor[i].ip << "\t\t";
-        cout<<contenedor[i].rec << "\t";
-        cout<<contenedor[i].perd << "\t";
-        cout<<contenedor[i].estado << "\n";
+        lista[i].imprimir();
     }
   return 0;
 }
@@ -142,17 +139,23 @@ void manejoDatos(string str, string ip){
     string recive= "received";//variable para buscar la palabra received
     string p_rec = str.substr(str.find(transmited)+13,str.find(recive)-(str.find(transmited)+13));//guardo la cantidad de paquetes recibidos
     //guardo la informacion en el contenedor
+    contenedor.setsIp(ip);
+    contenedor.setsTrans(p_tras);
+    contenedor.setsRec(p_rec);
+    contenedor.setsPerd(to_string(stoi(p_tras)-stoi(p_rec)));
+    /*
     packaje.ip=ip;
     packaje.trans=p_tras;
     packaje.rec=p_rec;
     packaje.perd=to_string(stoi(p_tras)-stoi(p_rec));//guardo la cantidad de paquetes perdidos (transmitidos - recibidos)
+    */
     //verifico si la ip esta activa o no
     if(stoi(p_rec)==0){
-    packaje.estado="DOWN";
-    }else{  
-    packaje.estado="UP";
+        contenedor.setsEstado("DOWN");
+    }else{
+        contenedor.setsEstado("UP");
     }
     //guardo el contenedor en el vector
-    contenedor.push_back(packaje);
+    lista.push_back(contenedor);
 }
 
