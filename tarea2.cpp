@@ -1,3 +1,4 @@
+//Matias Roman
 #include <stdlib.h>
 #include <thread>
 #include <unistd.h>
@@ -67,10 +68,13 @@ void Contenedor:: imprimir(){
     cout<<this->perd <<"\t";
     cout<<this->estado <<"\t" <<"\n";
 }
-
-void manejoDatos(string str, string ip);
+//funcion para extraer los datos de ip , transmisiones, recibidas y perdidas, estado
+void manejoDatos(string str, string ip,size_t pos);
+//funcion que se encarga de hacer el ping 
 void ping(string ip, size_t pos, string pk);
+//vector que contiene los datos de las ips
 vector<Contenedor> lista;
+pthread_mutex_t mutex;
 
 int main(int argc, char *argv[] ) {
     //verifico que se ingresen la cantidad de parametros correctos
@@ -89,6 +93,7 @@ int main(int argc, char *argv[] ) {
     cout<<"no se puede abrir el archivo o direccion erronea";
 	return 0;
 	}
+    pthread_mutex_init(&mutex, NULL);
     int cantidad=0; //contador para la cantidad de lineas
     vector<string>ip; //vector para guardar las ips
     string line; //variable para guardar las lineas del archivo (ips por linea)
@@ -127,44 +132,42 @@ void ping(string ip, size_t pos, string pk){
     //creo el buffer
     FILE *fp;
     char buffer[1024];
-    fp = popen(ping.c_str(), "r"); // popen ejecuta el comando ping
+    fp = popen(ping.c_str(), "r"); // popen ejecuta el comando ping (crea un ejecutable (nombre ejecutable, modo de ejecucion, comando)) 
     //leo el buffer (salida del comando ping)
     while (fgets(buffer, sizeof(buffer), fp) != NULL) {
         count++;
         //veo la 4ta linea del buffer (la que tiene la informacion de los paquetes)
         if(count==4){  
             //envio la linea a la funcion manejoDatos para que la procese en conjunto con la ip
-            manejoDatos(buffer,ip);
+            manejoDatos(buffer,ip,pos);
         }
     }
     pclose(fp);
     
 }
-void manejoDatos(string str, string ip){
+void manejoDatos(string str, string ip, size_t pos){
     Contenedor contenedor;
     string transmited = "transmitted"; //variable para buscar la palabra transmitted
     string p_tras = str.substr(0,(str.find(transmited)-8)); //guardo la cantidad de paquetes transmitidos
     string recive= "received";//variable para buscar la palabra received
     string p_rec = str.substr(str.find(transmited)+13,str.find(recive)-(str.find(transmited)+13));//guardo la cantidad de paquetes recibidos
-    string perdidos= to_string(stoi(p_tras)-stoi(p_rec));
+    string perdidos= to_string(stoi(p_tras)-stoi(p_rec)); //guardo la cantidad de paquetes perdidos (transmitidos - recibidos)
     //guardo la informacion en el contenedor
     contenedor.setsIp(ip);
     contenedor.setsTrans(p_tras);
     contenedor.setsRec(p_rec);
     contenedor.setsPerd(perdidos);
-    /*
-    packaje.ip=ip;
-    packaje.trans=p_tras;
-    packaje.rec=p_rec;
-    packaje.perd=to_string(stoi(p_tras)-stoi(p_rec));//guardo la cantidad de paquetes perdidos (transmitidos - recibidos)
-    */
-    //verifico si la ip esta activa o no
+    //verifico si la ip esta activa o no vasta un solo paquete recibido para que este activa
     if(stoi(p_rec)==0){
         contenedor.setsEstado("DOWN");
     }else{
         contenedor.setsEstado("UP");
     }
-    //guardo el contenedor en el vector
+    //ocupo el mutex para que las hebras no pusheen al mismo tiempo
+    pthread_mutex_lock(&mutex);
+     //guardo el contenedor en el vector
     lista.push_back(contenedor);
+
+    pthread_mutex_unlock(&mutex);
 }
 
